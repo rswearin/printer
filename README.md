@@ -4,4 +4,4 @@
 - paste over the simple python script and set the target path in main()
 - run > python3 printer.py to print all files to one ./printed.txt
 
-# i recommend creating a custom assistant in openai with this txt file in its knowledge base.
+I recommend creating a customGPT in openai with this printed.txt file in its knowledge base.
