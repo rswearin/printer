@@ -1,25 +1,27 @@
 import os
 
-def read_all_files(directory):
+def read_all_files(target_directories, excluded_directories, excluded_file_types):
     """
-    Read all files in the src directory and its subdirectories.
-    Exclude the src/lib/components/ui directory and its subdirectories.
+    Read all files in the specified directories and their subdirectories.
+    Exclude specified directories and file types.
     Return concatenated content of all files.
     """
-    exclude_dir = os.path.join(directory, 'lib/components/ui')
     code_content = []
-    for root, _, files in os.walk(directory):
-        if exclude_dir in root:
-            continue
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    code_content.append(f"File: {file_path}\n")
-                    code_content.append(f.read())
-                    code_content.append("\n" + "="*80 + "\n")
-            except Exception as e:
-                print(f"Error reading file {file_path}: {e}")
+    for directory in target_directories:
+        for root, _, files in os.walk(directory):
+            if any(excluded_dir in root for excluded_dir in excluded_directories):
+                continue
+            for file in files:
+                if any(file.endswith(ext) for ext in excluded_file_types):
+                    continue
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        code_content.append(f"File: {file_path}\n")
+                        code_content.append(f.read())
+                        code_content.append("\n" + "="*80 + "\n")
+                except Exception as e:
+                    print(f"Error reading file {file_path}: {e}")
     return ''.join(code_content)
 
 def write_to_output(content, output_file):
@@ -33,11 +35,14 @@ def write_to_output(content, output_file):
         print(f"Error writing to file {output_file}: {e}")
 
 def main():
-    src_directory = './src'
-    output_file = 'printed.txt'
+    # Set all parameters here
+    target_directories = ['./src']
+    excluded_directories = ['lib/components/ui']
+    excluded_file_types = ['.css']
+    output_file = './printed.txt'
     
     try:
-        all_code = read_all_files(src_directory)
+        all_code = read_all_files(target_directories, excluded_directories, excluded_file_types)
         write_to_output(all_code, output_file)
         print(f"All code written to {output_file}")
     except Exception as e:
